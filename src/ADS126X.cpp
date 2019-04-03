@@ -1,6 +1,7 @@
 
 #include "ADS126X.h" // the header
 #include "definitions/ADS126X_hardware.h" // board specific commands
+#include <Arduino.h>
 
 /*!< Some initial setup */
 
@@ -85,6 +86,11 @@ int32_t ADS126X::readADC1(uint8_t pos_pin,uint8_t neg_pin) {
     REGISTER.INPMUX.bit.MUXN = neg_pin;
     REGISTER.INPMUX.bit.MUXP = pos_pin;
     ADS126X::writeRegister(ADS126X_INPMUX); // replace on ads126x
+    // wait till data ready pin is falling edge
+    _ads126x_write_pin_low(start_pin);
+    delayMicroseconds(10);
+    _ads126x_write_pin_high(start_pin);
+    delayMicroseconds(20);
   }
 
   uint8_t i = 0; // current place in outgoing buffer
